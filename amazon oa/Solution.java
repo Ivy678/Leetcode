@@ -1,6 +1,4 @@
 import java.util.*;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 public class Solution {
     public int findMaximumRush(int[] login, int[] logout) {

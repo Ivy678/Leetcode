@@ -1,6 +1,8 @@
 import java.util.*;
 
-public class Solution {
+public class findMaximumRush {
+
+
     public int findMaximumRush(int[] login, int[] logout) {
         List<int[]> events = new ArrayList<>();
         // 步骤1：合并和标记事件
@@ -31,5 +33,24 @@ public class Solution {
         }
         // 步骤5：返回结果
         return daysOfMaxRush;
+        
     }
+
+    public static void main(String[] args) {
+        Solution s = new Solution();
+        int[] login = new int[]{1, 5, 5};
+        int[] logout = new int[]{5, 10, 5};
+        System.out.println(s.findMaximumRush(login, logout));
+
+        login = new int[]{1, 3, 3};
+        logout = new int[]{6, 6, 6};
+        System.out.println(s.findMaximumRush(login, logout));
+
+        login = new int[]{1, 1, 1};
+        logout = new int[]{1, 1, 1};
+        System.out.println(s.findMaximumRush(login, logout));
+    }
+    
 }
+
+

@@ -1,43 +1,50 @@
 import java.util.*;
 
-public class findMaximumRush{
-    public int findMaximumRush(int[] login, int[] logout) {
-        List<int[]> events = new ArrayList<>();
-        // 步骤1：合并和标记事件
-        for (int i = 0; i < login.length; i++) {
-            events.add(new int[]{login[i], 1}); // 登录事件，标记为1
-            events.add(new int[]{logout[i] + 1, -1}); // 登出事件的次日，标记为-1
+import java.util.TreeMap;
 
-            //“登出事件的次日”，这是因为在处理登出时间时，我们通常认为用户在登出当天仍然是在线的。
-            //为了准确计算在线天数，我们可以在用户登出的次日标记一个事件，表示从这一天开始，用户不再在线。这样做是为了确保用户登出当天仍被计算为在线状态。
-        }
-        // 步骤2：排序事件
-        Collections.sort(events, (a, b) -> a[0] - b[0]);
+class Solution {
+    public int findMaximumRush(int[] login, int[] logout) {
+        TreeMap<Integer, Integer> timeline = new TreeMap<>();
         
-        int maxRush = 0, currentCount = 0, daysOfMaxRush = 0;
-        for (int i = 0; i < events.size(); ) {
-            int day = events.get(i)[0];
-            while (i < events.size() && events.get(i)[0] == day) {
-                currentCount += events.get(i)[1];
-                i++;
+        // 构建时间线，记录每个时间点登录(+1)和登出(-1)的变化
+        for (int i = 0; i < login.length; i++) {
+            timeline.put(login[i], timeline.getOrDefault(login[i], 0) + 1);
+            timeline.put(logout[i], timeline.getOrDefault(logout[i], 0) - 1);
+        }
+        
+        int currentUsers = 0; // 当前登录用户数
+        int maxRush = 0; // 最大并发登录用户数
+        int currentDay = 0; // 当前处理的天
+        int daysOfMaxRush = 0; // 达到最大并发登录用户数的总天数
+        
+        // 遍历时间线来计算每个时间点的并发登录用户数
+        for (Map.Entry<Integer, Integer> entry : timeline.entrySet()) {
+            if (currentDay != entry.getKey()) {
+                if (currentUsers == maxRush) {
+                    // 如果前一天的用户数等于最大并发登录用户数，增加总天数
+                    daysOfMaxRush += entry.getKey() - currentDay;
+                }
+                currentDay = entry.getKey();
             }
-            // 步骤3 & 4：遍历事件，计算在线用户数并找出最大高峰
-            if (currentCount > maxRush) {
-                maxRush = currentCount;
+            
+            currentUsers += entry.getValue();
+            if (currentUsers > maxRush) {
+                maxRush = currentUsers; // 更新最大并发登录用户数
+                daysOfMaxRush = 1; // 重置达到最大并发登录用户数的总天数
+            } else if (currentUsers == maxRush && entry.getValue() > 0) {
+                // 如果当前用户数增加到最大并发登录用户数，开始一个新的总天数计数
                 daysOfMaxRush = 1;
-            } else if (currentCount == maxRush) {
-                daysOfMaxRush++;
             }
         }
-        // 步骤5：返回结果
-        return daysOfMaxRush;
         
+        return daysOfMaxRush;
     }
+        
 
     public static void main(String[] args) {
-        findMaximumRush s = new findMaximumRush();
-        int[] login = new int[]{1, 5, 5};
-        int[] logout = new int[]{5, 10, 5};
+        Solution s = new Solution();
+        int[] login = new int[]{1, 3, 3};
+        int[] logout = new int[]{6, 6, 6};
         System.out.println(s.findMaximumRush(login, logout));
 
         login = new int[]{1, 3, 3};
@@ -48,7 +55,6 @@ public class findMaximumRush{
         logout = new int[]{1, 1, 1};
         System.out.println(s.findMaximumRush(login, logout));
     }
-    
 }
 
 
